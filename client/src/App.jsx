@@ -1,9 +1,9 @@
 import './App.css';
 import React, { useState } from "react";
-import HouseStatsPage from './pages/HouseStatsPage';
-import PageSwitcher from './components/PageSwitcher';
-import Credits from './components/Credits';
-import HomePage from './pages/Home';
+import HouseStatsPage from './pages/HouseStatsPage.jsx';
+import PageSwitcher from './components/PageSwitcher.jsx';
+import Credits from './components/Credits.jsx';
+import HomePage from './pages/Home.jsx';
 
 function App() {
   const [currentView, setCurrentView] = useState('home');

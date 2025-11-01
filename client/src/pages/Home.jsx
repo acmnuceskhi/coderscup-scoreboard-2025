@@ -1,8 +1,8 @@
 import BackgroundImage from '../assets/background.jpg';
 import React, { useState } from "react";
-import TopBar from '../components/TopBar';
-import ScoreTable from '../components/ScoreTable';
-import BatchSelector from '../components/BatchSelector';
+import TopBar from '../components/TopBar.jsx';
+import ScoreTable from '../components/ScoreTable.jsx';
+import BatchSelector from '../components/BatchSelector.jsx';
 
 var batches = [
     "22k",

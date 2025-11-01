@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import TableSpinner from "./TableSpinner";
+import TableSpinner from "./TableSpinner.jsx";
 
 
 const ScoreTable = ({ room, onDataUpdate }) => {
