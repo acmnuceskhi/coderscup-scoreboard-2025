@@ -1,27 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-::-webkit-scrollbar {
-    width: 5px;
-    overflow: hidden;
-    height: 0px;
+@font-face {
+    font-family: 'HoshikoSatsuki';
+    src: url('./assets/fonts/HoshikoSatsuki.ttf') format('truetype');
 }
 
-::-webkit-scrollbar-track{
-    border-radius:0 6px 6px 0;
-    background: rgba(0, 0, 0, 0.829);
+body {
+    @apply text-white;
 }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: rgba(171,126,12,1);
-    border-radius:1rem;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #274d94cb;
-    cursor: pointer;
-    background: rgba(171,126,12,0.5);
+@theme {
+    --font-hoshiko: 'HoshikoSatsuki', sans-serif;
+    --color-primaryYellow: #f49a31;
 }

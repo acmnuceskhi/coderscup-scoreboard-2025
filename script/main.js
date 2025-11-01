@@ -20,7 +20,7 @@ export const getData = async (URL) => {
 
     try {
         browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
             defaultViewport: viewportSize,
         });
