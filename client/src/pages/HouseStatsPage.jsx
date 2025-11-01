@@ -1,8 +1,8 @@
 import BackgroundImage from '../assets/background.jpg';
 import React, { useEffect, useState } from "react";
-import TopBar from '../components/TopBar';
+import TopBar from '../components/TopBar.jsx';
 import { io } from "socket.io-client";
-import CardSpinner from '../components/CardSpinner';
+import CardSpinner from '../components/CardSpinner.jsx';
 import logo1 from "../assets/arsenal-logo.png"
 import logo2 from "../assets/barca-logo.png"
 import logo3 from "../assets/real-logo.png"

@@ -1,13 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
+    "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     screens: {
-      'vsm': '500px', // Add this custom screen size
+      'vsm': '500px', 
       'sm': '600px',
-      ...require('tailwindcss/defaultTheme').screens, // Keep the existing default screens
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
     },
     extend: {
       'main-bg': "url('/assets/bg.png')",
