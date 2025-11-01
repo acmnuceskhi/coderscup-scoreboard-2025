@@ -6,8 +6,24 @@ import logo4 from "../assets/united-logo.png"
 
 const TopBar = () => {
     return (
-        <div className="bg-gradient-to-r from-black/40 via-black/50 to-black/40 backdrop-blur-2xl w-screen justify-center content-center flex border-b border-[#f7b72e]/20 shadow-[0_4px_30px_rgba(0,0,0,0.5)] py-3 px-4">
-            <div className="w-fit text-center flex sm:gap-9 vsm:gap-4 gap-0 justify-center items-center content-center">
+        <div className="relative w-screen justify-center content-center flex py-4 px-4 overflow-hidden">
+            {/* Gradient Background - Lower opacity for background visibility */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/12 via-black/15 to-black/12"></div>
+            
+            {/* Subtle Gold Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f7b72e]/2 to-transparent"></div>
+            
+            {/* Top Border Glow */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#f7b72e]/40 to-transparent"></div>
+            
+            {/* Bottom Border */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#f7b72e]/30 to-transparent shadow-[0_2px_10px_rgba(247,183,46,0.3)]"></div>
+            
+            {/* Shadow Overlay for depth */}
+            <div className="absolute inset-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]"></div>
+            
+            {/* Content */}
+            <div className="relative z-10 w-fit text-center flex sm:gap-9 vsm:gap-4 gap-0 justify-center items-center content-center">
                 <div className="w-fit text-center flex sm:gap-9 vsm:gap-4 gap-0 justify-center items-center content-center transition-all duration-300 ease-out hover:scale-110 hover:drop-shadow-[0_0_15px_rgba(225,189,112,0.6)] cursor-pointer">
                     <img src={logo1} alt="Gunners" className="sm:h-16 vsm:h-14 h-10 filter drop-shadow-lg" />
                 </div>
