@@ -92,7 +92,7 @@ function mutateProblems(problems) {
     const p = problems[idx];
 
     if (p.status === "Accepted") {
-        sanitizeProblem(p);
+        // sanitizeProblem(p);
         return;
     }
 
@@ -158,7 +158,7 @@ function recomputeScoresAndRanks(arr) {
 }
 
 function maybeAddTeam(arr) {
-    if (chance(0.5)) {
+    if (chance(0.2)) {
         arr.push({
             rank: String(arr.length + 1),
             teamName: `Team_${BATCH}_${randInt(100, 999)}`,

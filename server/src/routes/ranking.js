@@ -19,6 +19,9 @@ export default function rankingRoutes(io) {
         '25k': [],
     };
 
+    let versions = new Map(); // batch -> version
+    let lastSnapshot = new Map(); // batch -> rows
+
     io.on("connection", (socket) => {
         console.log("A user connected");
 
@@ -51,13 +54,44 @@ export default function rankingRoutes(io) {
             return res.status(500).json({ error: "Invalid batch" });
         }
 
-        const updatedData = updateBuffer(data, batch, buffer['Houses']);
-        buffer[batch] = updatedData.data;
+        // get version and increment it
+        const version = (versions.get(batch) ?? 0) + 1;
+        versions.set(batch, version);
+
+        // Normalize to socket payload
+        const rows = data.map(row => ({
+            teamId: row.teamName,
+            rank: Number(row.rank),
+            teamName: row.teamName,
+            score: Number(row.score),
+            problems: row.problems
+        }));
+
+        lastSnapshot.set(batch, rows);
+
+        const updatedData = updateBuffer(rows, batch, buffer['Houses']);
+
+        const payload = {
+            batch,
+            version,
+            ts: Date.now(),
+            rows: updatedData.data
+        };
+
+        buffer[batch] = payload;
         buffer['Houses'] = updatedData.score;
         console.log(`Buffer updated for batch ${batch}...`);
 
-        io.to(batch).emit("sendData", data);
-        io.to('Houses').emit("sendData", buffer['Houses']);
+        // console.log("data: ", data);
+        // console.log("rows: ", rows)
+        io.to(batch).emit("sendData", payload);
+        // io.to(batch).emit("ranking:update", {
+        //     batch,
+        //     version,
+        //     ts: Date.now(),
+        //     rows
+        // });
+        // io.to('Houses').emit("sendData", buffer['Houses']);
 
         return res.status(200).json({ message: "Buffer updated" });
     });

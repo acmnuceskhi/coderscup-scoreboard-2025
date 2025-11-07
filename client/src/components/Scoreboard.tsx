@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import TableSpinner from "./TableSpinner";
 
@@ -18,12 +18,12 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
         }
     }
 
-
     useEffect(() => {
         const socket = io("http://localhost:4000/");
         socket.emit("joinRoom", room);
         socket.on("sendData", (rankingData) => {
             try {
+                console.log(rankingData)
                 setData(rankingData);
                 if (onDataUpdate) {
                     onDataUpdate(rankingData);
@@ -95,11 +95,11 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                     </table>
                 </div>
                 :
-                <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max w-5/6 overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,_0,_0,_1)] justify-center items-end content-center flex">
+                <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max w-5/6 overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
                     <h2 className="text-[rgba(171,126,12,1)] sm:text-3xl text-xl text-center px-3">No Record Available</h2>
                 </div>
             :
-            <div className="h-full w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,_0,_0,_1)] justify-center items-center content-center flex ">
+            <div className="h-full w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-center content-center flex ">
                 <TableSpinner />
             </div>
     );

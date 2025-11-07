@@ -83,7 +83,6 @@ export const getData = async (URL) => {
 };
 
 export const postData = async (data, batch) => {
-    console.log(KEY)
     try {
         const response = await fetch(backendURL, {
             method: "POST",
@@ -110,6 +109,7 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     const data = await getData(rankingURL);
     console.log(data);
     if (data && data.length > 0) {
+        console.log("posting data to backend...");
         await postData(data, batch);
     } else {
         console.error("⚠️ No data scraped or data is empty");
