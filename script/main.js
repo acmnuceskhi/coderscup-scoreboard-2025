@@ -83,6 +83,7 @@ export const getData = async (URL) => {
 };
 
 export const postData = async (data, batch) => {
+    console.log(KEY)
     try {
         const response = await fetch(backendURL, {
             method: "POST",
@@ -98,14 +99,14 @@ export const postData = async (data, batch) => {
         }
 
         const json = await response.json();
-        console.log(`✅ Data sent successfully (batch: ${batch}):`, json);
+        console.log(`Data sent successfully (batch: ${batch}):`, json);
     } catch (error) {
-        console.error("❌ Error sending data:", error);
+        console.error("Error sending data:", error);
     }
 };
 
 export const scrapeAndSendData = async (batch, rankingURL) => {
-    console.log(`📊 Scraping data (${batch})...`);
+    console.log(`Scraping data (${batch})...`);
     const data = await getData(rankingURL);
     console.log(data);
     if (data && data.length > 0) {
@@ -115,7 +116,8 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     }
 };
 
-const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
+// const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
+const leaderboardUrl = "https://vjudge.net/contest/764708#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);
