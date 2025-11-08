@@ -33,7 +33,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
 
     const prevRowsRef = useRef<Map<string, Row>>(new Map());
     const blinkUntilRef = useRef<Map<string, number>>(new Map());
-    
+
     const [soundEnabled, setSoundEnabled] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -56,7 +56,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
         if (!soundEnabled || !audioRef.current) return;
         console.log("after")
         audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => { }); // swallow if user muted system, etc.
+        audioRef.current.play().catch(() => { });
     };
 
     useEffect(() => {
@@ -70,19 +70,21 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
             const nextMap = new Map(payload.rows.map(r => [r.teamId, r]));
 
             const now = Date.now();
-            const blinkForMs = 2200;
+            const blinkForMs = 4000;
 
             let anyChime = false;
             payload.rows.forEach(r => {
                 const prev = prevMap.get(r.teamId);
                 if (!prev) {
                     blinkUntilRef.current.set(r.teamId, now + blinkForMs);
-                    anyChime = true;
                     return;
                 }
                 if (prev.rank !== r.rank) {
                     blinkUntilRef.current.set(r.teamId, now + blinkForMs);
-                    if (prev.rank > r.rank) anyChime = true; // improved rank
+                    if (prev.rank > r.rank && r.rank <= 3) anyChime = true; // improved rank
+                }
+                if (prev.score < r.score) {
+                    blinkUntilRef.current.set(r.teamId, now + blinkForMs);
                 }
             });
 
@@ -98,7 +100,7 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
         socket.on("sendData", (payload: Payload) => {
             try {
                 console.log(payload)
-                if (payload && payload.rows.length > 0 && payload.rows[0].problems) {
+                if (payload && payload.rows && payload.rows.length > 0 && payload.rows[0].problems) {
                     const newFields = ["Rank", "Team Name", "Score"];
                     for (let i = 0; i < payload.rows[0].problems.length; i++) {
                         newFields.push(String.fromCharCode(65 + i));
@@ -153,8 +155,8 @@ const ScoreBoard = ({ room, onDataUpdate }: any) => {
                                             initial={{ opacity: 0.6, y: 8 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -8 }}
-                                            transition={{ type: "spring", stiffness: 500, damping: 40, mass: 0.6 }}
-                                            className={`rounded-2xl p-3 shadow ${row.rank <= 3 && blink ? "animate-blink" : ""} bg-zinc-900/40 border border-zinc-800`}
+                                            transition={{ type: "spring", stiffness: 100, damping: 40, mass: 0.6 }}
+                                            className={`rounded-2xl p-3 shadow ${blink ? "animate-blink" : ""} bg-zinc-900/40 border border-zinc-800`}
                                         >
                                             <td className="whitespace-nowrap vsm:text-base text-xs px-4 py-2 h-12 font-normal bg-black/25 text-gray-200 text-center">
                                                 {row.rank}
