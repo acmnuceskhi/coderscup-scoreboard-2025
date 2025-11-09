@@ -194,7 +194,7 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
                                 <tbody aria-live="polite">
                                     <AnimatePresence initial={false}>
                                         {rows.map((row: Row) => {
-                                            if(row.teamId === "N/A") return null;
+                                            if (row.teamId === "N/A") return null;
                                             const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
                                             const aura = getRankAura(row.rank);
                                             return (
@@ -262,9 +262,7 @@ const ScoreBoard = ({ room, onDataUpdate, setIsContestRunning }: ScoreboardProps
                     <h2 className="sm:text-3xl text-xl text-center px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
                 </div>
             :
-            <div className="h-full w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-center content-center flex ">
-                <TableSpinner />
-            </div>
+            <TableSpinner />
     );
 };
 

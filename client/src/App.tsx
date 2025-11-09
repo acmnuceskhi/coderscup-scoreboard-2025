@@ -68,7 +68,7 @@ function App() {
               className="h-24 pointer-events-none select-none"
             />
             <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">
-              Batch '22
+              Batch '24
             </p>
           </div>
           <ScoreBoard room="22k" setIsContestRunning={setIsContestRunning} />
