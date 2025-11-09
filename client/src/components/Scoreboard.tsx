@@ -96,7 +96,8 @@ const ScoreBoard = ({ room, onDataUpdate }: ScoreboardProps) => {
     }, [soundEnabled]);
 
     useEffect(() => {
-        const socket = io("http://localhost:4000");
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
             if (payload.batch !== room) return;
