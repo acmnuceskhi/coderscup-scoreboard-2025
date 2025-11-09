@@ -43,15 +43,13 @@ export default function rankingRoutes(io) {
     });
 
     router.post('/postRanking', Authenticate, async (req, res) => {
-        const { data, batch } = req.body;
-
-        if (!data) {
-            console.log("No data found");
-            return res.status(500).json({ error: "No data found" });
+        const { data, batch, meta } = req.body;
+        console.log(data, meta);
+        if (!Array.isArray(data)) {
+            return res.status(400).json({ error: "Invalid data: expected array" });
         }
         if (!batch || !["22k", "23k", "24k", "25k"].includes(batch)) {
-            console.log("Invalid batch");
-            return res.status(500).json({ error: "Invalid batch" });
+            return res.status(400).json({ error: "Invalid batch" });
         }
 
         // get version and increment it
@@ -76,6 +74,7 @@ export default function rankingRoutes(io) {
             batch,
             version,
             ts: Date.now(),
+            remainingTime: meta?.remainingTime || "N/A",
             rows: updatedData.data
         };
 

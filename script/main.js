@@ -41,6 +41,12 @@ export const getData = async (URL) => {
     }
 
     const data = await page.evaluate(() => {
+        let elapsedTime = document.querySelector("#info-remaining #span-remaining");
+        if (elapsedTime) {
+            elapsedTime = elapsedTime.innerText.trim();
+        } else {
+            elapsedTime = "N/A";
+        }
         const rows = document.querySelectorAll("#contest-rank-table tbody tr");
         const result = [];
 
@@ -77,7 +83,8 @@ export const getData = async (URL) => {
 
             result.push({ rank, teamName, score, penalty, problems });
         });
-        return result;
+        return { result, elapsedTime };
+        // return result;
     });
     await browser.close();
     return data;
@@ -87,7 +94,7 @@ export const postData = async (data, batch) => {
     try {
         const response = await fetch(backendURL, {
             method: "POST",
-            body: JSON.stringify({ data, batch }),
+            body: JSON.stringify({ data: data.rows, batch, meta: data.meta }),
             headers: {
                 "Content-Type": "application/json",
                 key: KEY,
@@ -95,7 +102,8 @@ export const postData = async (data, batch) => {
         });
 
         if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
+            console.error("Status:", response.status, response.statusText);
+            throw new Error(`Network response was not ok`);
         }
 
         const json = await response.json();
@@ -109,9 +117,9 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
     console.log(`Scraping data (${batch})...`);
     const data = await getData(rankingURL);
     console.log(data);
-    if (data && data.length > 0) {
+    if (data && Array.isArray(data.result)) {
         console.log("posting data to backend...");
-        await postData(data, batch);
+        await postData({ rows: data.result, meta: { remainingTime: data.elapsedTime } }, batch);
     } else {
         console.error("⚠️ No data scraped or data is empty");
     }
@@ -119,6 +127,7 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
 
 // const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
 const leaderboardUrl = "https://vjudge.net/contest/764956#rank";
+// const leaderboardUrl = "https://vjudge.net/contest/765305#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);

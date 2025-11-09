@@ -13,6 +13,7 @@ const server = http.createServer(app);
 app.use(cors({
   // origin: ['https://coders-cup-scoreboard-frontend.vercel.app', 'https://leaderboard.acmnuceskhi.com'],
   origin: ['http://localhost:5173/'],
+  // origin: ['http://localhost:5174/'],
   credentials: true
 }));
 
@@ -20,6 +21,7 @@ const io = new SocketIO(server, {
   cors: {
     // origin: ['https://coders-cup-scoreboard-frontend.vercel.app', 'https://leaderboard.acmnuceskhi.com'],
     origin: ['http://localhost:5173'],
+    // origin: ['http://localhost:5143'],
     methods: ["GET", "POST"],
     credentials: true
   }

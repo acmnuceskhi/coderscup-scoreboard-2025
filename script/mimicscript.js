@@ -33,7 +33,8 @@ const state = {
         {
             rank: "1",
             teamName: "Test_Account123",
-            score: "5",
+            score: "",
+            penalty: "",
             problems: [
                 { status: "Not attempted", time: "", penalty: "" },
                 { status: "Not attempted", time: "", penalty: "" },
@@ -45,7 +46,8 @@ const state = {
         {
             rank: "2",
             teamName: "zayan_ahmed",
-            score: "4",
+            score: "",
+            penalty: "",
             problems: [
                 { status: "Not attempted", time: "", penalty: "" },
                 { status: "Not attempted", time: "", penalty: "" },
@@ -57,7 +59,8 @@ const state = {
         {
             rank: "3",
             teamName: "CodingExpert2527 (Coding Expert 2527)",
-            score: "4",
+            score: "",
+            penalty: "",
             problems: [
                 { status: "Not attempted", time: "", penalty: "" },
                 { status: "Not attempted", time: "", penalty: "" },
@@ -163,6 +166,7 @@ function maybeAddTeam(arr) {
             rank: String(arr.length + 1),
             teamName: `Team_${BATCH}_${randInt(100, 999)}`,
             score: "0",
+            penalty: "",
             problems: Array.from({ length: PROBLEM_COUNT }, () => ({
                 status: chance(0.25) ? "Attempted" : "Not attempted",
                 time: "",
@@ -178,6 +182,7 @@ function mutateBatchArray(arr) {
             rank: "1",
             teamName: `Team_${BATCH}_${randInt(100, 999)}`,
             score: "0",
+            penalty: "",
             problems: Array.from({ length: PROBLEM_COUNT }, () => ({ status: "Not attempted", time: "", penalty: "" }))
         });
     }
