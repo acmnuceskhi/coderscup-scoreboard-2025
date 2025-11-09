@@ -11,17 +11,21 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors({
-  // origin: ['https://coders-cup-scoreboard-frontend.vercel.app', 'https://leaderboard.acmnuceskhi.com'],
-  origin: ['http://localhost:5173/'],
-  // origin: ['http://localhost:5174/'],
+  origin: [
+    'http://localhost:5173',
+    'https://coderscup-scoreboard-2025.vercel.app',
+    'https://coderscup-scoreboard-2025-raahims-projects-f828742c.vercel.app'
+  ],
   credentials: true
 }));
 
 const io = new SocketIO(server, {
   cors: {
-    // origin: ['https://coders-cup-scoreboard-frontend.vercel.app', 'https://leaderboard.acmnuceskhi.com'],
-    origin: ['http://localhost:5173'],
-    // origin: ['http://localhost:5143'],
+    origin: [
+      'http://localhost:5173',
+      'https://coderscup-scoreboard-2025.vercel.app',
+      'https://coderscup-scoreboard-2025-raahims-projects-f828742c.vercel.app'
+    ],
     methods: ["GET", "POST"],
     credentials: true
   }
