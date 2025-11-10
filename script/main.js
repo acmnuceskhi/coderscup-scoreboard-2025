@@ -10,6 +10,7 @@ dotenv.config();
 const backendURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 // const backendURL = "http://localhost:4000/api/postRanking";
 const KEY = process.env.KEY;
+const contestStarted = false;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +53,7 @@ export const getData = async (URL) => {
         if (contestStateElement) {
             contestState = contestStateElement.innerText.trim() || "N/A";
         }
+
         const rows = document.querySelectorAll("#contest-rank-table tbody tr");
         const result = [];
 
@@ -131,8 +133,8 @@ export const scrapeAndSendData = async (batch, rankingURL) => {
 };
 
 // const leaderboardUrl = "https://vjudge.net/contest/672067#rank";
-const leaderboardUrl = "https://vjudge.net/contest/765305#rank";
-// const leaderboardUrl = "https://vjudge.net/contest/765305#rank";
+// const leaderboardUrl = "https://vjudge.net/contest/765400#rank";
+const leaderboardUrl = "https://vjudge.net/contest/765412#rank";
 
 // run every 30s
 setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);

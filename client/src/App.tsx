@@ -20,7 +20,9 @@ function formatHMS(total: number) {
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
   const s = total % 60;
-  return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  // console.log(h, m);
+  return `${h}:${String(m).padStart(2, "0")}`;
+  // return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function App() {
@@ -32,12 +34,12 @@ function App() {
 
 
   // update every second
-  useEffect(() => {
-    const id = setInterval(() => {
-      setTimeLeft((t) => (t > 0 ? t - 1 : 0));
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
+  // useEffect(() => {
+  //   const id = setInterval(() => {
+  //     setTimeLeft((t) => (t > 0 ? t - 1 : 0));
+  //   }, 1000);
+  //   return () => clearInterval(id);
+  // }, []);
 
   // whenever localStorage changes (e.g., next scrape)
   useEffect(() => {
@@ -83,7 +85,6 @@ function App() {
           />
           <div className="absolute inset-0 translate-y-11 flex items-center justify-center">
             <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide">
-              { }
               {isContestRunning ? (
                 timeLeft > 0 ? formatHMS(timeLeft) : "Ended"
               ) : "Ended"}
