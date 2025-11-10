@@ -11,15 +11,23 @@ const backendURL = process.env.BACKEND_URL || "http://localhost:4000/api/postRan
 const KEY = process.env.KEY || "dev-key";
 const BATCH = process.env.BATCH || "22k";
 
+const START_OFFSET_MIN = parseInt(process.env.MIMIC_START_OFFSET_MIN || "0", 10);
+const DURATION_MIN = parseInt(process.env.MIMIC_DURATION_MIN || "90", 10);
+
+const nowMs = Date.now();
+const CONTEST_START = new Date(nowMs + START_OFFSET_MIN * 60_000).toISOString();
+const CONTEST_END = new Date(new Date(CONTEST_START).getTime() + DURATION_MIN * 60_000).toISOString();
+
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const chance = (p) => Math.random() < p;
 
+const pad2 = (n) => String(n).padStart(2, "0");
 function secondsToHMS(s) {
     const h = Math.floor(s / 3600);
     s %= 3600;
     const m = Math.floor(s / 60);
     const sec = s % 60;
-    return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    return `${pad2(h)}:${pad2(m)}:${pad2(sec)}`;
 }
 function randomContestTime() {
     return secondsToHMS(randInt(60, 3 * 3600));
@@ -94,10 +102,7 @@ function mutateProblems(problems) {
     const idx = randInt(0, problems.length - 1);
     const p = problems[idx];
 
-    if (p.status === "Accepted") {
-        // sanitizeProblem(p);
-        return;
-    }
+    if (p.status === "Accepted") return;
 
     if (p.status === "Not attempted") {
         if (chance(0.65)) {
@@ -140,23 +145,31 @@ function recomputeScoresAndRanks(arr) {
         const accepted = t.problems.filter((p) => p.status === "Accepted").length;
         t.score = String(accepted);
     });
+
     const toSec = (s) => {
         if (!s) return 0;
         const [h, m, ss] = s.split(":").map(Number);
         return (h || 0) * 3600 + (m || 0) * 60 + (ss || 0);
     };
+
     arr.sort((a, b) => {
-        const sa = parseInt(a.score, 10);
-        const sb = parseInt(b.score, 10);
+        const sa = parseInt(a.score || "0", 10);
+        const sb = parseInt(b.score || "0", 10);
         if (sb !== sa) return sb - sa;
-        const ta =
-            a.problems.filter(p => p.status === "Accepted" && p.time)
-                .map(p => toSec(p.time)).reduce((x, y) => x + y, 0);
-        const tb =
-            b.problems.filter(p => p.status === "Accepted" && p.time)
-                .map(p => toSec(p.time)).reduce((x, y) => x + y, 0);
+
+        const ta = a.problems
+            .filter((p) => p.status === "Accepted" && p.time)
+            .map((p) => toSec(p.time))
+            .reduce((x, y) => x + y, 0);
+
+        const tb = b.problems
+            .filter((p) => p.status === "Accepted" && p.time)
+            .map((p) => toSec(p.time))
+            .reduce((x, y) => x + y, 0);
+
         return ta - tb;
     });
+
     arr.forEach((t, i) => (t.rank = String(i + 1)));
 }
 
@@ -183,7 +196,11 @@ function mutateBatchArray(arr) {
             teamName: `Team_${BATCH}_${randInt(100, 999)}`,
             score: "0",
             penalty: "",
-            problems: Array.from({ length: PROBLEM_COUNT }, () => ({ status: "Not attempted", time: "", penalty: "" }))
+            problems: Array.from({ length: PROBLEM_COUNT }, () => ({
+                status: "Not attempted",
+                time: "",
+                penalty: ""
+            }))
         });
     }
 
@@ -194,9 +211,7 @@ function mutateBatchArray(arr) {
             team.problems = Array.from({ length: PROBLEM_COUNT }, (_, i) => team.problems[i] || { status: "Not attempted", time: "", penalty: "" });
         }
         const edits = randInt(0, 2);
-        for (let i = 0; i < edits; i++) {
-            mutateProblems(team.problems);
-        }
+        for (let i = 0; i < edits; i++) mutateProblems(team.problems);
         team.problems.forEach(sanitizeProblem);
     });
 
@@ -207,7 +222,14 @@ export const postData = async (data, batch) => {
     try {
         const response = await fetch(backendURL, {
             method: "POST",
-            body: JSON.stringify({ data, batch, meta: "", contestState: "" }),
+            body: JSON.stringify({
+                data,
+                batch,
+                meta: {
+                    startTime: CONTEST_START,
+                    endTime: CONTEST_END
+                }
+            }),
             headers: {
                 "Content-Type": "application/json",
                 key: KEY
@@ -233,5 +255,4 @@ export const generateAndSendData = async (batch) => {
 };
 
 setInterval(() => generateAndSendData(BATCH), 10_000);
-
 generateAndSendData(BATCH);

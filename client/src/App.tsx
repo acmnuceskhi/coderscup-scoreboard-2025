@@ -195,7 +195,7 @@ function App() {
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
 
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
-          <div className={`absolute z-50 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'sm:block'}`}>
+          <div className={`absolute z-50 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
             <img
               src="/wooden-plank.png"
               alt="Batch"

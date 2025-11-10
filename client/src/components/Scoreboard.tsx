@@ -16,8 +16,6 @@ type Payload = {
     batch: string;
     version: number;
     ts: number;
-    remainingTime: string;
-    contestState: string;
     startTime: string | null;
     endTime: string | null;
     rows: Row[];
