@@ -5,13 +5,13 @@ const getHouse = (teamName) => {
     const houseName = match[1].trim().toLowerCase();
     switch (houseName.substring(0, 2)) {
         case 're':
-            return 'Red Devils';
+            return 'Oogway';
         case 'ga':
-            return 'Galacticos';
+            return 'Shen';
         case 'gu':
-            return 'Gunners';
+            return 'DragonWarrior';
         case 'cu':
-            return 'Culers';
+            return 'TaiLung';
         default:
             return null;
     }
@@ -20,10 +20,10 @@ const getHouse = (teamName) => {
 const updateBuffer = (data, batch, score) => {
     let count = 0;
     let tempScore = {
-        'Gunners': 0,
-        'Culers': 0,
-        'Red Devils': 0,
-        'Galacticos': 0
+        'DragonWarrior': 0,
+        'TaiLung': 0,
+        'Oogway': 0,
+        'Shen': 0
     };
 
     for (let team of data) {

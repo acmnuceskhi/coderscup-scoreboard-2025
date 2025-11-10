@@ -5,57 +5,52 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 dotenv.config();
-
-// Backend endpoint
-const backendURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
-// const backendURL = "http://localhost:4000/api/postRanking";
 const KEY = process.env.KEY;
-const CONTEST_START = "2025-11-10T12:00:00+05:00";
-const CONTEST_END = "2025-11-10T13:30:00+05:00";
 
+// ------------------------------------ SUBJECTIVE DATA ------------------------------------
+const LEADERBOARDURL = "https://vjudge.net/contest/765411#rank";
+// const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
+const BACKENDURL = "http://localhost:4000/api/postRanking";
+
+const CONTEST_START = "2025-11-10T11:50:00+05:00";
+const CONTEST_END = "2025-11-10T13:20:00+05:00";
+// ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const getData = async (URL) => {
-    let browser = null;
-    const viewportSize = { width: 1920, height: 1080 };
+const VIEWPORT = { width: 1920, height: 1080 };
+const RANK_TABLE_SELECTOR = "#contest-rank-table";
 
+const launchBrowser = async () => {
     try {
-        browser = await puppeteer.launch({
+        return await puppeteer.launch({
             headless: true,
             args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-            defaultViewport: viewportSize,
+            defaultViewport: VIEWPORT,
         });
     } catch (error) {
         console.error("Error launching Puppeteer:", error);
+        throw error;
     }
+};
+
+const newConfiguredPage = async (browser) => {
     const page = await browser.newPage();
     await page.setUserAgent(new UserAgent().toString());
-    await page.goto(URL, { waitUntil: "networkidle0" });
+    return page;
+};
+
+const waitForRankTable = async (page) => {
     try {
-        await page.waitForSelector("#contest-rank-table", { timeout: 30000 });
+        await page.waitForSelector(RANK_TABLE_SELECTOR, { timeout: 30000 });
     } catch (e) {
-        console.error("❌ Table not found:", e);
-        await page.screenshot({ path: path.join(__dirname, "error_screenshot.png") });
-        console.log(await page.content());
-        await browser.close();
-        return { error: "Table not found" };
+        throw e;
     }
+};
 
-    const data = await page.evaluate(() => {
-        const contestStateElement = document.querySelector("#info-running");
-        const elapsedTimeElement = document.querySelector("#info-remaining #span-remaining");
-        let elapsedTime, contestState;
-        if (elapsedTimeElement) {
-            elapsedTime = elapsedTimeElement.innerText.trim();
-        } else {
-            elapsedTime = "N/A";
-        }
-        if (contestStateElement) {
-            contestState = contestStateElement.innerText.trim() || "N/A";
-        }
-
+const extractLeaderboard = async (page) => {
+    return page.evaluate(() => {
         const rows = document.querySelectorAll("#contest-rank-table tbody tr");
         const result = [];
 
@@ -92,24 +87,50 @@ export const getData = async (URL) => {
 
             result.push({ rank, teamName, score, penalty, problems });
         });
-        return { result, elapsedTime, contestState };
         // return result;
+        return result;
     });
-    await browser.close();
-    return data;
+};
+
+export const getData = async (URL) => {
+    let browser = null;
+    try {
+        browser = await launchBrowser();
+        const page = await newConfiguredPage(browser);
+        await page.goto(URL, { waitUntil: "networkidle0" });
+
+        try {
+            await waitForRankTable(page);
+        } catch (e) {
+            console.error("Table not found:", e);
+            await page.screenshot({ path: path.join(__dirname, "error_screenshot.png") });
+            console.log(await page.content());
+            return { error: "Table not found" };
+        }
+
+        const data = await extractLeaderboard(page);
+        return data;
+    } catch (err) {
+        console.error("Unexpected scraping error:", err);
+        return { error: "Unexpected scraping error" };
+    } finally {
+        if (browser) {
+            try {
+                await browser.close();
+            } catch { }
+        }
+    }
 };
 
 export const postData = async (data, batch) => {
     try {
         console.log("data", data);
-        const response = await fetch(backendURL, {
+        const response = await fetch(BACKENDURL, {
             method: "POST",
             body: JSON.stringify({
                 data: data.rows,
                 batch,
                 meta: {
-                    remainingTime: data.meta.remainingTime,
-                    contestState: data.meta.contestState,
                     startTime: CONTEST_START,
                     endTime: CONTEST_END
                 }
@@ -132,23 +153,26 @@ export const postData = async (data, batch) => {
     }
 };
 
-export const scrapeAndSendData = async (batch, rankingURL) => {
+export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Scraping data (${batch})...`);
-    const data = await getData(rankingURL);
+    const data = await getData(leaderboardURL);
     console.log(data);
-    if (data && Array.isArray(data.result)) {
+    if (data && Array.isArray(data)) {
         console.log("posting data to backend...");
-        await postData({ rows: data.result, meta: { remainingTime: data.elapsedTime, contestState: data.contestState, startTime: CONTEST_START, endTime: CONTEST_END } }, batch);
+        await postData(
+            {
+                rows: data,
+                meta: { startTime: CONTEST_START, endTime: CONTEST_END }
+            },
+            batch
+        );
     } else {
-        console.error("⚠️ No data scraped or data is empty");
+        console.error("No data scraped or data is empty");
     }
 };
 
-const leaderboardUrl = "https://vjudge.net/contest/765411#rank";// actual
-// const leaderboardUrl = "https://vjudge.net/contest/762603#rank";
-
 // run every 30s
-setInterval(() => scrapeAndSendData("22k", leaderboardUrl), 30000);
+setInterval(() => scrapeAndSendData("22k", LEADERBOARDURL), 30000);
 
-// Run on startup
-scrapeAndSendData("22k", leaderboardUrl);
+// run on startup
+scrapeAndSendData("22k", LEADERBOARDURL);

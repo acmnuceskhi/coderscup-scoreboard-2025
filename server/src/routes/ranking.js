@@ -6,10 +6,10 @@ export default function rankingRoutes(io) {
     const router = express.Router();
 
     let score = {
-        'Gunners': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
-        'Culers': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
-        'Red Devils': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
-        'Galacticos': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 }
+        'DragonWarrior': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
+        'TaiLung': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
+        'Oogway': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
+        'Shen': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 }
     };
     const buffer = {
         'Houses': score,
@@ -18,6 +18,11 @@ export default function rankingRoutes(io) {
         '24k': [],
         '25k': [],
     };
+
+    let contestTimes = {
+        startTime: null,
+        endTime: null
+    }
 
     let versions = new Map(); // batch -> version
     let lastSnapshot = new Map(); // batch -> rows
@@ -44,8 +49,9 @@ export default function rankingRoutes(io) {
 
     router.post('/postRanking', Authenticate, async (req, res) => {
         const { data, batch, meta } = req.body;
+
         console.log(data, meta);
-        console.log("Contest State:", meta.contestState);
+
         if (!Array.isArray(data)) {
             return res.status(400).json({ error: "Invalid data: expected array" });
         }
@@ -53,8 +59,8 @@ export default function rankingRoutes(io) {
             return res.status(400).json({ error: "Invalid batch" });
         }
 
-        const startTime = meta?.startTime;
-        const endTime = meta?.endTime;
+        contestTimes.startTime = meta.startTime;
+        contestTimes.endTime = meta.endTime;
 
         // get version and increment it
         const version = (versions.get(batch) ?? 0) + 1;
@@ -78,10 +84,8 @@ export default function rankingRoutes(io) {
             batch,
             version,
             ts: Date.now(),
-            remainingTime: meta?.remainingTime || "N/A",
-            contestState: meta?.contestState || "N/A",
-            startTime: startTime || null,
-            endTime: endTime || null,
+            startTime: meta.startTime,
+            endTime: meta.endTime,
             rows: updatedData.data
         };
 
@@ -89,15 +93,7 @@ export default function rankingRoutes(io) {
         buffer['Houses'] = updatedData.score;
         console.log(`Buffer updated for batch ${batch}...`);
 
-        // console.log("data: ", data);
-        // console.log("rows: ", rows)
         io.to(batch).emit("sendData", payload);
-        // io.to(batch).emit("ranking:update", {
-        //     batch,
-        //     version,
-        //     ts: Date.now(),
-        //     rows
-        // });
         // io.to('Houses').emit("sendData", buffer['Houses']);
 
         return res.status(200).json({ message: "Buffer updated" });
@@ -108,6 +104,10 @@ export default function rankingRoutes(io) {
             return res.status(200).json(buffer);
         }
         return res.status(404).json({ error: "No buffer data found" });
+    });
+
+    router.get('/getContestTime', (req, res) => {
+        return res.status(200).json(contestTimes);
     });
 
     return router;
