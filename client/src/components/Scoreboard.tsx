@@ -70,12 +70,10 @@ const getRankAura = (rank: number) => {
 type ScoreboardProps = {
     room: string;
     onDataUpdate?: (payload: Payload) => void;
-    setStartTime: React.Dispatch<React.SetStateAction<Date | null>>;
-    setEndTime: React.Dispatch<React.SetStateAction<Date | null>>;
     isSoundOpen: boolean;
 };
 
-const ScoreBoard = ({ room, onDataUpdate, setStartTime, setEndTime, isSoundOpen }: ScoreboardProps) => {
+const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
     const [rows, setRows] = useState<Row[] | ''>('');
     const [version, setVersion] = useState<number>(0);
     const [fields, setFields] = useState<string[]>(["Rank", "Team", "Score"]);
@@ -105,17 +103,6 @@ const ScoreBoard = ({ room, onDataUpdate, setStartTime, setEndTime, isSoundOpen 
         const onUpdate = (payload: Payload) => {
             if (payload.batch !== room) return;
             if (payload.version <= version) return; // ignore older versions
-
-            console.log(payload.startTime, payload.endTime);
-
-            // console.log(payload.contestState);
-
-            if (payload.startTime) {
-                setStartTime(new Date(payload.startTime));
-            }
-            if (payload.endTime) {
-                setEndTime(new Date(payload.endTime));
-            }
 
             const prevMap = prevRowsRef.current;
             const nextMap = new Map(payload.rows.map(r => [r.teamId, r]));

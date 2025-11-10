@@ -12,8 +12,8 @@ const LEADERBOARDURL = "https://vjudge.net/contest/765411#rank";
 // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 const BACKENDURL = "http://localhost:4000/api/postRanking";
 
-const CONTEST_START = "2025-11-10T11:50:00+05:00";
-const CONTEST_END = "2025-11-10T13:20:00+05:00";
+const CONTEST_START = "2025-11-10T19:00:00+05:00";
+const CONTEST_END = "2025-11-10T20:30:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -124,7 +124,6 @@ export const getData = async (URL) => {
 
 export const postData = async (data, batch) => {
     try {
-        console.log("data", data);
         const response = await fetch(BACKENDURL, {
             method: "POST",
             body: JSON.stringify({

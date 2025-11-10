@@ -11,6 +11,7 @@ export default function rankingRoutes(io) {
         'Oogway': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 },
         'Shen': { '22k': 0, '23k': 0, '24k': 0, '25k': 0 }
     };
+
     const buffer = {
         'Houses': score,
         '22k': [],
@@ -22,7 +23,7 @@ export default function rankingRoutes(io) {
     let contestTimes = {
         startTime: null,
         endTime: null
-    }
+    };
 
     let versions = new Map(); // batch -> version
     let lastSnapshot = new Map(); // batch -> rows
@@ -62,11 +63,9 @@ export default function rankingRoutes(io) {
         contestTimes.startTime = meta.startTime;
         contestTimes.endTime = meta.endTime;
 
-        // get version and increment it
         const version = (versions.get(batch) ?? 0) + 1;
         versions.set(batch, version);
 
-        // Normalize to socket payload
         const rows = data.map(row => ({
             teamId: row.teamName,
             rank: Number(row.rank),
@@ -91,10 +90,10 @@ export default function rankingRoutes(io) {
 
         buffer[batch] = payload;
         buffer['Houses'] = updatedData.score;
+
         console.log(`Buffer updated for batch ${batch}...`);
 
         io.to(batch).emit("sendData", payload);
-        // io.to('Houses').emit("sendData", buffer['Houses']);
 
         return res.status(200).json({ message: "Buffer updated" });
     });
@@ -108,6 +107,26 @@ export default function rankingRoutes(io) {
 
     router.get('/getContestTime', (req, res) => {
         return res.status(200).json(contestTimes);
+    });
+
+    router.get('/getTopTeams/:batch', (req, res) => {
+        const { batch } = req.params;
+
+        if (!batch || !["22k", "23k", "24k", "25k"].includes(batch)) {
+            return res.status(400).json({ error: "Invalid batch" });
+        }
+
+        const batchData = buffer[batch];
+
+        if (!batchData || !Array.isArray(batchData.rows)) {
+            return res.status(404).json({ error: "No data available for this batch yet" });
+        }
+
+        const sorted = [...batchData.rows].sort((a, b) => a.rank - b.rank);
+        const top3 = sorted.slice(0, 3);
+
+        console.log(`Top 3 teams for ${batch}:`, top3);
+        return res.status(200).json(top3);
     });
 
     return router;
