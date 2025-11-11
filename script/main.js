@@ -8,7 +8,9 @@ dotenv.config();
 const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
-const LEADERBOARDURL = "https://vjudge.net/contest/765492#rank";
+// const LEADERBOARDURL = "https://vjudge.net/contest/765492#rank";
+const LEADERBOARDURL = "https://vjudge.net/contest/765411#rank";
+
 const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 // const BACKENDURL = "http://localhost:4000/api/postRanking";
 
