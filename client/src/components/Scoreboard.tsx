@@ -94,8 +94,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
     }, [isSoundOpen]);
 
     useEffect(() => {
-        // const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
-        const backendUrl = "http://localhost:4000";
+        const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
+        // const backendUrl = "http://localhost:4000";
         const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {

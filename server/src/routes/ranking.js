@@ -123,11 +123,19 @@ export default function rankingRoutes(io) {
         }
 
         const sorted = [...batchData.rows].sort((a, b) => a.rank - b.rank);
-        const top3 = sorted.slice(0, 3);
 
+        if (sorted.length < 3) {
+            return res.status(400).json({
+                error: "Not enough teams yet",
+                message: `Only ${sorted.length} team(s) available for batch ${batch}`,
+            });
+        }
+
+        const top3 = sorted.slice(0, 3);
         console.log(`Top 3 teams for ${batch}:`, top3);
         return res.status(200).json(top3);
     });
+
 
     return router;
 };

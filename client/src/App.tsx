@@ -14,7 +14,28 @@ type Team = {
 };
 
 function App() {
-  const BACKENDURL = "http://localhost:4000";
+  // const BACKENDURL = "http://localhost:4000";
+  const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
+
+  const CREDITS = [
+    { name: "Abdullah Azhar Khan", link: "https://abdullahazhar.vercel.app" },
+    { name: "Abdul Basit", link: "https://portfolio-abdulbasit-cs.netlify.app" },
+    { name: "Sarim Ahmed", link: "https://www.linkedin.com/in/sarim-ahmed-89412a19a" },
+  ];
+
+  const HOUSES = ["House Shen", "House Dragon Warrior", "House Oogway", "House Tai Lung"];
+
+  const NEWS_TEMPLATES: Array<(house: string, team: string) => string> = [
+    (h, t) => `${h} is thinking to bid on Team ${t}`,
+    (h, t) => `${h} scouts Team ${t} after a swift solve`,
+    (h, t) => `${h} whispers that Team ${t} found inner peace under pressure`,
+    (h, t) => `${h} notes Team ${t} mastered the secret ingredient: focus`,
+    (h, t) => `${h} says Team ${t} moves like a true Dragon Warrior`,
+    (h, t) => `${h} watches Team ${t} strike with perfect timing`,
+    (h, t) => `${h} believes Team ${t} unlocked the scroll of AC`,
+    (h, t) => `${h} hears the Jade Palace bells ring for Team ${t}`,
+  ];
+
 
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
@@ -107,7 +128,6 @@ function App() {
     return () => clearInterval(id);
   }, [startTime, endTime]);
 
-  // Fetch top teams during contest (for ticker) and also after (for podium)
   useEffect(() => {
     if (phase !== 'during' && phase !== 'after') return;
     fetchTopTeams();
@@ -124,14 +144,14 @@ function App() {
 
   const pickTickerMessage = () => {
     if (!podium.length) return "";
-    const chars = ["A", "B", "C", "D"];
-    const randChar = chars[Math.floor(Math.random() * chars.length)];
+    const house = HOUSES[Math.floor(Math.random() * HOUSES.length)];
     const team = podium[Math.floor(Math.random() * podium.length)];
     const teamLabel = team?.teamName ?? "a top team";
-    return `${randChar} is deciding to bid on Team ${teamLabel}`;
+    const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
+    return template(house, teamLabel);
   };
 
-  // Ticker runs during the contest
+
   useEffect(() => {
     if (phase !== 'during' || podium.length === 0) return;
     setTickerMessage(pickTickerMessage());
@@ -144,12 +164,8 @@ function App() {
       <div className="w-full max-w-5xl">
         <div className="text-center mb-8">
           <div className="flex flex-col gap-6 font-hoshiko text-2xl md:text-6xl tracking-wide">
-            <span className='text-3xl'>
-              Top Teams
-            </span>
-            <span className='underline decoration-4 decoration-primaryYellow'>
-              BATCH '25
-            </span>
+            <span className='text-3xl'>Top Teams</span>
+            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '22</span>
           </div>
         </div>
 
@@ -195,8 +211,28 @@ function App() {
 
   return (
     <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
-      <div className='fixed bottom-5 right-0'>
-        <img src="/cc-logo-cropped.png" alt="Coders' Cup '25" className='h-20 shadow-2xl' />
+
+      {/* Top-right Info button with hover credits */}
+      <div className="fixed top-5 right-5 z-50 group">
+        <button
+          aria-label="Info"
+          className="h-9 w-9 rounded-full grid place-items-center bg-[#ffe8b0] border-2 border-[#3c0d0d]/70 text-[#3c0d0d] font-bold shadow-md"
+          title="About"
+        >
+          i
+        </button>
+        <div className="z-100 absolute right-0 mt-2 w-60 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200">
+          <div className="rounded-xl bg-[#ffe8b0] border-4 border-[#3c0d0d]/70 shadow-2xl p-4">
+            <div className="font-hoshiko text-lg text-[#3c0d0d] mb-2">Credits</div>
+            <ul className="space-y-0.5">
+              {CREDITS.map((c) => (
+                <li key={c.name} className="text-[#6b2a2a] text-sm">
+                  <a href={c.link} className="font-semibold hover:underline">{c.name}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
       <button
@@ -205,7 +241,7 @@ function App() {
         aria-pressed={isSoundOpen}
         aria-label={isSoundOpen ? 'Turn sound off' : 'Turn sound on'}
         title={isSoundOpen ? 'Sound: ON' : 'Sound: OFF'}
-        className={`${phase === 'during' ? '' : 'hidden'} cursor-pointer fixed bottom-16 left-5 z-50 h-8 w-8 rounded-full bg-[#3c0d0d]/80 hover:bg-[#3c0d0d]/90 text-primaryYellow grid place-items-center select-none`}
+        className={`${phase === 'during' ? '' : 'hidden'} cursor-pointer fixed bottom-18 left-4 z-50 h-8 w-8 rounded-full bg-[#3c0d0d]/80 hover:bg-[#3c0d0d]/90 text-primaryYellow grid place-items-center select-none`}
       >
         <span className="text-xl leading-none">
           {isSoundOpen ? '🔊' : '🔇'}
@@ -216,38 +252,21 @@ function App() {
         <img src="/scoreboard-title.png" alt="Scoreboard" className='h-16 sm:h-28 mx-auto' />
 
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
-          <div className={`absolute z-50 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
-            <img
-              src="/wooden-plank.png"
-              alt="Batch"
-              className="h-24 pointer-events-none select-none"
-            />
-            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">
-              Batch '25
-            </p>
+          <div className={`absolute z-40 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
+            <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
+            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '22</p>
           </div>
 
-          <ScoreBoard
-            room="22k"
-            isSoundOpen={isSoundOpen}
-          />
+          <ScoreBoard room="22k" isSoundOpen={isSoundOpen} />
         </div>
       </div>
 
       <div className="fixed -top-30 md:-top-12 left-0">
         <div className="relative w-60">
-          <img
-            src="/timeboard.png"
-            alt="Coders' Cup '25"
-            className="w-full rotate-180 select-none pointer-events-none"
-          />
+          <img src="/timeboard.png" alt="Coders' Cup '25" className="w-full rotate-180 select-none pointer-events-none" />
           <div className="absolute inset-0 translate-y-11 flex flex-col items-center justify-center">
-            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-base tracking-wide">
-              {label}
-            </span>
-            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide tabular-nums">
-              {display}
-            </span>
+            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-base tracking-wide">{label}</span>
+            <span className="text-[#3c0d0d]/80 font-hoshiko font-bold text-2xl tracking-wide tabular-nums">{display}</span>
           </div>
         </div>
       </div>
@@ -257,9 +276,7 @@ function App() {
           <div className="mx-4 rounded-2xl bg-[#ffe8b0] shadow-2xl border-4 border-[#3c0d0d]/70 px-8 py-10 text-center">
             <div className="text-4xl md:text-5xl font-hoshiko text-[#3c0d0d] mb-2">
               Po just woke up… <br />
-              <span className='text-3xl'>
-                contest starting soon!
-              </span>
+              <span className='text-3xl'>contest starting soon!</span>
             </div>
             <div className="text-xl md:text-2xl font-hoshiko text-[#6b2a2a]">
               <span className="tabular-nums font-bold">{display}</span>
@@ -280,10 +297,9 @@ function App() {
         )
       )}
 
-      {/* Bottom ticker during the contest */}
       {phase === 'during' && tickerMessage && (
-        <div className="fixed bottom-0 left-0 right-0 z-40">
-          <div className="relative w-full overflow-hidden bg-[#ffe8b0] border-t-4 border-[#3c0d0d]/70">
+        <div className="fixed bottom-4 left-0 right-0 z-40">
+          <div className="relative w-full overflow-hidden bg-[#ffe8b0] border-y-2 border-[#3c0d0d]/90">
             <div className="marquee whitespace-nowrap py-2">
               <span className="px-4 font-hoshiko text-[#3c0d0d] text-lg">{tickerMessage}</span>
               <span className="px-8 font-hoshiko text-[#3c0d0d] text-lg">•</span>
