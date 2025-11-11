@@ -165,7 +165,7 @@ function App() {
         <div className="text-center mb-8">
           <div className="flex flex-col gap-6 font-hoshiko text-2xl md:text-6xl tracking-wide">
             <span className='text-3xl'>Top Teams</span>
-            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '22</span>
+            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '25</span>
           </div>
         </div>
 
@@ -254,7 +254,7 @@ function App() {
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
           <div className={`absolute z-40 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
             <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
-            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '22</p>
+            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '25</p>
           </div>
 
           <ScoreBoard room="22k" isSoundOpen={isSoundOpen} />
