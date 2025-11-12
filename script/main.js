@@ -8,14 +8,14 @@ dotenv.config();
 const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
-const LEADERBOARDURL = "https://vjudge.net/contest/765492#rank"; //actual
-// const LEADERBOARDURL = "https://vjudge.net/contest/765411#rank";
+// const LEADERBOARDURL = "https://vjudge.net/contest/765492#rank"; 
+const LEADERBOARDURL = "https://vjudge.net/contest/765843#rank"; //actual
 
 const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com/api/postRanking";
 // const BACKENDURL = "http://localhost:4000/api/postRanking";
 
-const CONTEST_START = "2025-11-12T06:45:00+05:00";
-const CONTEST_END = "2025-11-12T12:15:00+05:00";
+const CONTEST_START = "2025-11-12T11:20:00+05:00";
+const CONTEST_END = "2025-11-12T12:50:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);

@@ -39,7 +39,7 @@ function App() {
     (h, t) => `${h} is amazed — Team ${t} just balanced code and calm perfectly!`,
     (h, t) => `${h} says Team ${t} turned every WA into a lesson of patience`,
     (h, t) => `${h} chants: “There are no accidents!” as Team ${t} rises in rank`,
-    (h, t) => `${h} heard Po whisper: “Skadoosh!” after Team ${t}’s AC`,
+    (h, t) => `${h} heard Po whisper: “Skadoosh!” after Team ${t}'s AC`,
     (h, t) => `${h} laughs — Team ${t} just sent a lethal combo submission!`,
     (h, t) => `${h} thinks Team ${t} is coding in legendary Wuxi Finger style!`,
     (h, t) => `${h} just witnessed Team ${t} break the silence with a flawless solve!`,
@@ -50,6 +50,11 @@ function App() {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);
   const [isSoundOpen, setIsSoundOpen] = useState<boolean>(false);
+
+  const [isInfoPinned, setIsInfoPinned] = useState(false);
+  const [isInfoHover, setIsInfoHover] = useState(false);
+  const isInfoVisible = isInfoPinned || isInfoHover;
+
 
   const [label, setLabel] = useState<string>('');
   const [display, setDisplay] = useState<string>('--:--:--');
@@ -175,7 +180,7 @@ function App() {
         <div className="text-center mb-8">
           <div className="flex flex-col gap-6 font-hoshiko text-2xl md:text-6xl tracking-wide">
             <span className='text-3xl'>Top Teams</span>
-            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '23</span>
+            <span className='underline decoration-4 decoration-primaryYellow'>BATCH '22</span>
           </div>
         </div>
 
@@ -223,21 +228,43 @@ function App() {
     <main className="h-screen w-full bg-[url('/cc-bg-2.png')] bg-cover bg-center bg-no-repeat p-10 flex items-center justify-center flex-col relative">
 
       {/* Top-right Info button with hover credits */}
-      <div className="fixed top-5 right-5 z-50 group">
+      <div
+        className="fixed top-5 right-5 z-50"
+        onMouseEnter={() => setIsInfoHover(true)}
+        onMouseLeave={() => setIsInfoHover(false)}
+      >
         <button
           aria-label="Info"
+          aria-expanded={isInfoVisible}
+          onClick={() => setIsInfoPinned(v => !v)}
           className="h-9 w-9 rounded-full grid place-items-center bg-[#ffe8b0] border-2 border-[#3c0d0d]/70 text-[#3c0d0d] font-bold shadow-md"
           title="About"
         >
           i
         </button>
-        <div className="z-100 absolute right-0 mt-2 w-60 opacity-0 translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200">
+
+        <div
+          className={`absolute right-0 mt-2 w-60 transition-all duration-200 ${isInfoVisible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
+            }`}
+        >
           <div className="rounded-xl bg-[#ffe8b0] border-4 border-[#3c0d0d]/70 shadow-2xl p-4">
-            <div className="font-hoshiko text-lg text-[#3c0d0d] mb-2">Credits</div>
+            <div className="font-hoshiko text-lg text-[#3c0d0d] mb-2 flex items-center justify-between">
+              <span>Credits</span>
+              <button
+                aria-label="Close"
+                onClick={() => setIsInfoPinned(false)}
+                className="text-[#3c0d0d]/70 hover:text-[#3c0d0d] text-sm px-2 py-1 rounded"
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
             <ul className="space-y-0.5">
               {CREDITS.map((c) => (
                 <li key={c.name} className="text-[#6b2a2a] text-sm">
-                  <a href={c.link} className="font-semibold hover:underline">{c.name}</a>
+                  <a href={c.link} className="font-semibold hover:underline" target="_blank" rel="noreferrer">
+                    {c.name}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -264,7 +291,7 @@ function App() {
         <div className='max-h-[60vh] mx-auto mt-6 relative'>
           <div className={`absolute z-40 -top-16 -right-12 rotate-8 ${phase === 'before' || phase === 'after' ? 'hidden' : 'hidden sm:block'}`}>
             <img src="/wooden-plank.png" alt="Batch" className="h-24 pointer-events-none select-none" />
-            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '23</p>
+            <p className="absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85">Batch '22</p>
           </div>
 
           <ScoreBoard room="22k" isSoundOpen={isSoundOpen} />
