@@ -22,7 +22,7 @@ const ScoreboardPage = ({ isSoundOpen }: { isSoundOpen: boolean }) => {
                         className='absolute inset-0 flex items-center justify-center font-bold text-xl font-hoshiko text-[#3c0d0d]/85 w-fit -translate-x-1/2 left-1/2 focus:ring-0 bg-transparent cursor-pointer ring-0 focus:border-0 outline-none'
                     >
                         {batches.map((batch) => (
-                            <option key={batch} value={batch}>
+                            <option key={batch} value={batch} className='bg-[#e19f65] text-center'>
                                 Batch '{batch.slice(0, 2)}
                             </option>
                         ))}

@@ -26,7 +26,7 @@ function App() {
   const BACKENDURL = "http://localhost:4000";
   // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
-  const [page, setPage] = useState<'scoreboard' | 'house'>('scoreboard');
+  const [page, setPage] = useState<'scoreboard' | 'house'>('house');
 
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<Date | null>(null);

@@ -1,7 +1,7 @@
 
 const PageSwitcher = ({ page, setPage }: { page: 'scoreboard' | 'house'; setPage: React.Dispatch<React.SetStateAction<'scoreboard' | 'house'>> }) => {
     return (
-        <div className="fixed -bottom-30 md:-bottom-32 right-4 z-50 cursor-pointer"
+        <div className="fixed -bottom-30 right-4 z-50 cursor-pointer"
             onClick={() => {
                 page === 'scoreboard' ? setPage('house') : setPage('scoreboard')
             }}

@@ -99,7 +99,7 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen }: ScoreboardProps) => {
         const socket = io(backendUrl);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
-            console.log("Received payload:", payload);
+            // console.log("Received payload:", payload);
             if (payload.batch !== room) return;
             // if (payload.version <= version) return; // ignore older versions
 
