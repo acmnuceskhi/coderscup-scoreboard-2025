@@ -161,22 +161,58 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
     }, [room, onDataUpdate, playChime, version, page]);
 
     const now = Date.now();
+    const numProblems = rows !== '' && rows && rows.length > 0 && rows[0].problems ? rows[0].problems.length : 0;
+    const getProblemColumnWidth = () => {
+        if (numProblems === 0) return "min-w-16";
+        if (numProblems <= 3) return "min-w-20 sm:min-w-24 md:min-w-28";
+        if (numProblems <= 6) return "min-w-16 sm:min-w-20 md:min-w-24";
+        if (numProblems <= 10) return "min-w-14 sm:min-w-18 md:min-w-20";
+        return "min-w-12 sm:min-w-16 md:min-w-18";
+    };
+    const getProblemTextSize = () => {
+        if (numProblems <= 3) return {
+            cell: "text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem]",
+            status: "text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem]",
+            time: "text-[0.65rem] sm:text-[0.75rem] md:text-[0.85rem] lg:text-[0.9rem]",
+            penalty: "text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem]"
+        };
+        if (numProblems <= 6) return {
+            cell: "text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.65rem]",
+            status: "text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.58rem]",
+            time: "text-[0.55rem] sm:text-[0.65rem] md:text-[0.75rem] lg:text-[0.85rem]",
+            penalty: "text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.55rem]"
+        };
+        return {
+            cell: "text-[0.35rem] sm:text-[0.4rem] md:text-[0.5rem] lg:text-[0.55rem]",
+            status: "text-[0.3rem] sm:text-[0.35rem] md:text-[0.4rem] lg:text-[0.45rem]",
+            time: "text-[0.45rem] sm:text-[0.55rem] md:text-[0.65rem] lg:text-[0.7rem]",
+            penalty: "text-[0.3rem] sm:text-[0.35rem] md:text-[0.4rem] lg:text-[0.45rem]"
+        };
+    };
+    const problemTextSizes = getProblemTextSize();
+    
     return (
         rows !== '' ?
             rows && rows.length > 0 ?
                 <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/95 to-[#050101]/95 shadow-[0_35px_55px_rgba(0,0,0,0.6)]">
                     <div className="max-h-[70vh] sm:max-h-[50vh] md:max-h-[43vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto">
-                        <table className="min-w-max mx-auto w-full overflow-x-auto">
+                        <table className="min-w-max mx-auto w-full overflow-x-auto" style={{ tableLayout: numProblems > 10 ? 'auto' : 'fixed' }}>
                             <thead className="sticky top-0 z-30">
                                 <tr className="">
-                                    {fields.map((element, index) => (
-                                        <th
-                                            key={index}
-                                            className="sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl tracking-wider sm:tracking-widest text-center px-1 sm:px-2 md:px-3 py-2 sm:py-2.5 md:py-3 lg:py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]"
-                                        >
-                                            {element}
-                                        </th>
-                                    ))}
+                                    {fields.map((element, index) => {
+                                        const isProblemColumn = index >= 4; // After Rank, Team, Score, Penalty
+                                        return (
+                                            <th
+                                                key={index}
+                                                className={classNames(
+                                                    "sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl tracking-wider sm:tracking-widest text-center px-1 sm:px-2 md:px-3 py-2 sm:py-2.5 md:py-3 lg:py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]",
+                                                    isProblemColumn ? getProblemColumnWidth() : ""
+                                                )}
+                                            >
+                                                {element}
+                                            </th>
+                                        );
+                                    })}
                                 </tr>
                             </thead>
                             <tbody aria-live="polite">
@@ -225,17 +261,17 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                                                     <td
                                                         key={jdx}
                                                         className={classNames(
-                                                            "min-w-16 sm:min-w-20 md:min-w-22 whitespace-nowrap px-1 sm:px-1.5 md:px-2 lg:px-2.5 py-1.5 sm:py-2 md:py-2.5 lg:py-3 text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.65rem] font-semibold uppercase tracking-wider sm:tracking-widest text-center",
+                                                            `${getProblemColumnWidth()} whitespace-nowrap px-1 sm:px-1.5 md:px-2 lg:px-2.5 py-1.5 sm:py-2 md:py-2.5 lg:py-3 ${problemTextSizes.cell} font-semibold uppercase tracking-wider sm:tracking-widest text-center`,
                                                             getStatusClasses(problem.status)
                                                         )}
                                                     >
-                                                        <span className="block text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.58rem] text-white/75">
+                                                        <span className={`block ${problemTextSizes.status} text-white/75`}>
                                                             {problem.status}
                                                         </span>
-                                                        <span className="block text-white/95 text-[0.55rem] sm:text-[0.65rem] md:text-[0.75rem] lg:text-[0.85rem]">
+                                                        <span className={`block text-white/95 ${problemTextSizes.time}`}>
                                                             {problem.status === "Accepted" ? problem.time : ""}
                                                         </span>
-                                                        <span className="block text-white/70 text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.55rem]">
+                                                        <span className={`block text-white/70 ${problemTextSizes.penalty}`}>
                                                             {problem.penalty || ""}
                                                         </span>
                                                     </td>
