@@ -65,6 +65,27 @@ const getRankAura = (rank: number) => {
     };
 };
 
+// House accent helpers for left color bar
+const normalizeHouseKey = (name: string) =>
+    name.replace(/^house\s+/i, "").replace(/\s+/g, "").toLowerCase();
+
+const HOUSE_ACCENTS: Record<string, { leftShadow: string }> = {
+    oogway: { leftShadow: "shadow-[inset_4px_0_0_rgba(16,185,129,0.45)]" }, // green
+    shen: { leftShadow: "shadow-[inset_4px_0_0_rgba(244,63,94,0.45)]" },    // red
+    po: { leftShadow: "shadow-[inset_4px_0_0_rgba(245,158,11,0.5)]" }, // yellow
+    tailung: { leftShadow: "shadow-[inset_4px_0_0_rgba(79,70,229,0.45)]" },      // indigo
+};
+
+// Best-effort house detection from team name; can be replaced with explicit mapping
+const detectHouseFromTeam = (teamName: string): keyof typeof HOUSE_ACCENTS | null => {
+    const s = teamName.toLowerCase();
+    if (s.includes("oogway")) return "oogway";
+    if (s.includes("shen")) return "shen";
+    if (s.includes("po")) return "po";
+    if (s.includes("tai") && s.includes("lung")) return "tailung";
+    return null;
+};
+
 type ScoreboardProps = {
     room: string;
     onDataUpdate?: (payload: Payload) => void;
@@ -185,6 +206,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                                         if (row.teamId === "N/A") return null;
                                         const blink = (blinkUntilRef.current.get(row.teamId) ?? 0) > now;
                                         const aura = getRankAura(row.rank);
+                                        const houseKey = detectHouseFromTeam(row.teamName);
+                                        const houseAccent = houseKey ? HOUSE_ACCENTS[houseKey] : null;
                                         return (
                                             <motion.tr
                                                 key={row.teamId}
@@ -202,7 +225,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                                                     "group overflow-hidden transition-all duration-300 backdrop-blur-sm",
                                                     `bg-linear-to-r ${aura.row}`,
                                                     blink && "animate-blink ring-2 ring-[#f59e0b]/45",
-                                                    "ring-2 ring-[#f59e0b]/15"
+                                                    "ring-2 ring-[#f59e0b]/15",
+                                                    houseAccent && houseAccent.leftShadow
                                                 )}
                                             >
                                                 <td className="w-12 sm:w-14 px-2 sm:px-3 py-1.5 font-bold font-hoshiko text-center">
