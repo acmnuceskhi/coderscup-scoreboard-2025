@@ -161,22 +161,58 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
     }, [room, onDataUpdate, playChime, version, page]);
 
     const now = Date.now();
+    const numProblems = rows !== '' && rows && rows.length > 0 && rows[0].problems ? rows[0].problems.length : 0;
+    const getProblemColumnWidth = () => {
+        if (numProblems === 0) return "min-w-16";
+        if (numProblems <= 3) return "min-w-20 sm:min-w-24 md:min-w-28";
+        if (numProblems <= 6) return "min-w-16 sm:min-w-20 md:min-w-24";
+        if (numProblems <= 10) return "min-w-14 sm:min-w-18 md:min-w-20";
+        return "min-w-12 sm:min-w-16 md:min-w-18";
+    };
+    const getProblemTextSize = () => {
+        if (numProblems <= 3) return {
+            cell: "text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem]",
+            status: "text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem]",
+            time: "text-[0.65rem] sm:text-[0.75rem] md:text-[0.85rem] lg:text-[0.9rem]",
+            penalty: "text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem]"
+        };
+        if (numProblems <= 6) return {
+            cell: "text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.65rem]",
+            status: "text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.58rem]",
+            time: "text-[0.55rem] sm:text-[0.65rem] md:text-[0.75rem] lg:text-[0.85rem]",
+            penalty: "text-[0.35rem] sm:text-[0.45rem] md:text-[0.5rem] lg:text-[0.55rem]"
+        };
+        return {
+            cell: "text-[0.35rem] sm:text-[0.4rem] md:text-[0.5rem] lg:text-[0.55rem]",
+            status: "text-[0.3rem] sm:text-[0.35rem] md:text-[0.4rem] lg:text-[0.45rem]",
+            time: "text-[0.45rem] sm:text-[0.55rem] md:text-[0.65rem] lg:text-[0.7rem]",
+            penalty: "text-[0.3rem] sm:text-[0.35rem] md:text-[0.4rem] lg:text-[0.45rem]"
+        };
+    };
+    const problemTextSizes = getProblemTextSize();
+    
     return (
         rows !== '' ?
             rows && rows.length > 0 ?
                 <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/95 to-[#050101]/95 shadow-[0_35px_55px_rgba(0,0,0,0.6)]">
-                    <div className="max-h-[43vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto max-w-[90vw]">
-                        <table className="min-w-max mx-auto max-w-[90vw] overflow-x-auto">
+                    <div className="max-h-[70vh] sm:max-h-[50vh] md:max-h-[43vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto">
+                        <table className="min-w-max mx-auto w-full overflow-x-auto" style={{ tableLayout: numProblems > 10 ? 'auto' : 'fixed' }}>
                             <thead className="sticky top-0 z-30">
                                 <tr className="">
-                                    {fields.map((element, index) => (
-                                        <th
-                                            key={index}
-                                            className="sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xl tracking-widest text-center sm:px-3 px-1.5 py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]"
-                                        >
-                                            {element}
-                                        </th>
-                                    ))}
+                                    {fields.map((element, index) => {
+                                        const isProblemColumn = index >= 4; // After Rank, Team, Score, Penalty
+                                        return (
+                                            <th
+                                                key={index}
+                                                className={classNames(
+                                                    "sticky top-0 z-20 bg-linear-to-b font-hoshiko from-[#2c0a0a]/95 via-[#3c0d0d]/92 to-[#170404]/95 text-amber-200 border-b border-[#f59e0b]/40 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl tracking-wider sm:tracking-widest text-center px-1 sm:px-2 md:px-3 py-2 sm:py-2.5 md:py-3 lg:py-4 shadow-[inset_0_-1px_0_rgba(245,158,11,0.45)]",
+                                                    isProblemColumn ? getProblemColumnWidth() : ""
+                                                )}
+                                            >
+                                                {element}
+                                            </th>
+                                        );
+                                    })}
                                 </tr>
                             </thead>
                             <tbody aria-live="polite">
@@ -205,37 +241,37 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                                                     "ring-2 ring-[#f59e0b]/15"
                                                 )}
                                             >
-                                                <td className="w-12 sm:w-14 px-2 sm:px-3 py-1.5 font-bold font-hoshiko text-center">
+                                                <td className="w-10 sm:w-12 md:w-14 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 font-bold font-hoshiko text-center text-xs sm:text-sm md:text-base lg:text-lg">
                                                     {row.rank ? (
                                                         row.rank
                                                     ) : (
-                                                        <span className="text-sm text-amber-50/75 italic">❌</span>
+                                                        <span className="text-xs sm:text-sm text-amber-50/75 italic">❌</span>
                                                     )}
                                                 </td>
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 italic">
+                                                <td className="whitespace-nowrap px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-1 sm:py-1.5 text-amber-50 italic text-xs sm:text-sm md:text-base lg:text-lg">
                                                     {row.teamName}
                                                 </td>
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
+                                                <td className="whitespace-nowrap px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-1 sm:py-1.5 text-amber-50 text-center font-semibold italic text-xs sm:text-sm md:text-base lg:text-lg">
                                                     {row.score}
                                                 </td>
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-1.5 text-amber-50 text-center font-semibold italic">
+                                                <td className="whitespace-nowrap px-1.5 sm:px-2 md:px-2.5 lg:px-3.5 py-1 sm:py-1.5 text-amber-50 text-center font-semibold italic text-xs sm:text-sm md:text-base lg:text-lg">
                                                     {row.penalty}
                                                 </td>
                                                 {row.problems.map((problem: Row["problems"][number], jdx: number) => (
                                                     <td
                                                         key={jdx}
                                                         className={classNames(
-                                                            "min-w-22 whitespace-nowrap px-2 sm:px-2.5 py-3 text-[0.5rem] sm:text-[0.65rem] font-semibold uppercase tracking-widest text-center",
+                                                            `${getProblemColumnWidth()} whitespace-nowrap px-1 sm:px-1.5 md:px-2 lg:px-2.5 py-1.5 sm:py-2 md:py-2.5 lg:py-3 ${problemTextSizes.cell} font-semibold uppercase tracking-wider sm:tracking-widest text-center`,
                                                             getStatusClasses(problem.status)
                                                         )}
                                                     >
-                                                        <span className="block text-[0.45rem] sm:text-[0.58rem] text-white/75">
+                                                        <span className={`block ${problemTextSizes.status} text-white/75`}>
                                                             {problem.status}
                                                         </span>
-                                                        <span className="block text-white/95 text-[0.7rem] sm:text-[0.85rem]">
+                                                        <span className={`block text-white/95 ${problemTextSizes.time}`}>
                                                             {problem.status === "Accepted" ? problem.time : ""}
                                                         </span>
-                                                        <span className="block text-white/70 text-[0.45rem] sm:text-[0.55rem]">
+                                                        <span className={`block text-white/70 ${problemTextSizes.penalty}`}>
                                                             {problem.penalty || ""}
                                                         </span>
                                                     </td>
@@ -249,8 +285,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
                     </div>
                 </div>
                 :
-                <div className="min-w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-36 my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
-                    <h2 className="sm:text-3xl text-xl text-center px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
+                <div className="w-full divide-y-2 divide-black/5 rounded-md backdrop-blur-md py-16 sm:py-24 md:py-36 my-4 sm:my-6 md:my-10 min-h-max overflow-x-auto overflow-y-auto [box-shadow:0_0_10px_rgba(0,0,0,1)] justify-center items-end content-center flex">
+                    <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl text-center px-2 sm:px-3 font-hoshiko text-[#3c0d0d]">Waiting for the teams to score</h2>
                 </div>
             :
             <TableSpinner />

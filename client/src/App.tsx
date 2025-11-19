@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import BottomTicker from './components/BottomTicker';
-import TopThreeTeamsSection from './components/TopThreeTeamsSection';
+// import TopThreeTeamsSection from './components/TopThreeTeamsSection';
 import Credits from './components/Credits';
 import SoundButton from './components/SoundButton';
 import Timeboard from './components/Timeboard';
@@ -162,6 +162,7 @@ function App() {
           absolute inset-0
           transform transition-transform duration-1000 ease-out
           ${getPageTransform(page, 'scoreboard')}
+          overflow-hidden
         `}
         >
           <ScoreboardPage isSoundOpen={isSoundOpen} page={page} />
@@ -173,6 +174,8 @@ function App() {
           absolute inset-0
           transform transition-transform duration-1000 ease-out
           ${getPageTransform(page, 'house')}
+          overflow-y-auto overflow-x-hidden
+          [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
         `}
         >
           <HouseStatsPage page={page} />
@@ -184,6 +187,7 @@ function App() {
           absolute inset-0
           transform transition-transform duration-1000 ease-out
           ${getPageTransform(page, 'houserank')}
+          overflow-hidden
         `}
         >
           <HouseRankPage page={page} />
@@ -202,7 +206,7 @@ function App() {
       {/* Page Switcher chevron right */}
       {(page === 'scoreboard' || page === 'house') && (
         <img
-          className={`absolute w-16 right-4 cursor-pointer`}
+          className={`absolute w-10 sm:w-12 md:w-14 lg:w-16 right-2 sm:right-3 md:right-4 cursor-pointer`}
           onClick={goRight}
           src="/wooden-chevron.png"
           alt="switch page right"
@@ -212,7 +216,7 @@ function App() {
       {/* Page Switcher chevron left */}
       {(page === 'house' || page === 'houserank') && (
         <img
-          className={`absolute w-16 left-4 rotate-180 cursor-pointer`}
+          className={`absolute w-10 sm:w-12 md:w-14 lg:w-16 left-2 sm:left-3 md:left-4 rotate-180 cursor-pointer`}
           onClick={goLeft}
           src="/wooden-chevron.png"
           alt="switch page left"
