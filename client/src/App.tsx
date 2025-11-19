@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import BottomTicker from './components/BottomTicker';
-import TopThreeTeamsSection from './components/TopThreeTeamsSection';
+// import TopThreeTeamsSection from './components/TopThreeTeamsSection';
 import Credits from './components/Credits';
 import SoundButton from './components/SoundButton';
 import Timeboard from './components/Timeboard';
