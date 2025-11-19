@@ -51,8 +51,8 @@ const HouseStatsPage = ({ page }: { page: string }) => {
                     >
                         <div className="absolute inset-0 bg-black/20"></div>
                         <div className='mt-2 sm:mt-3 md:mt-4'>
-                            <div className="relative z-10 text-white/80 text-center font-hoshiko text-xs sm:text-sm tracking-wider sm:tracking-widest">HOUSE</div>
-                            <div className="relative z-10 text-white/80 text-center uppercase font-hoshiko text-sm sm:text-base md:text-lg lg:text-xl tracking-wider sm:tracking-widest font-semibold underline decoration-2 sm:decoration-3 md:decoration-4 decoration-primaryYellow underline-offset-4 sm:underline-offset-6 md:underline-offset-8">{house.name}</div>
+                            <div className="relative z-10 text-white/80 text-center font-hoshiko text-sm sm:text-sm tracking-wider sm:tracking-widest">HOUSE</div>
+                            <div className="relative z-10 text-white/80 text-center uppercase font-hoshiko text-base sm:text-base md:text-lg lg:text-xl tracking-wider sm:tracking-widest font-semibold underline decoration-2 sm:decoration-3 md:decoration-4 decoration-primaryYellow underline-offset-4 sm:underline-offset-6 md:underline-offset-8">{house.name}</div>
                         </div>
                         <div className="relative z-10 w-full">
                             {batches.map((batch) => {
