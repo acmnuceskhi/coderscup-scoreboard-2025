@@ -173,6 +173,8 @@ function App() {
           absolute inset-0
           transform transition-transform duration-1000 ease-out
           ${getPageTransform(page, 'house')}
+          overflow-y-auto overflow-x-hidden
+          [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
         `}
         >
           <HouseStatsPage page={page} />
