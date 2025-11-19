@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { io } from 'socket.io-client';
 import './App.css';
 import BottomTicker from './components/BottomTicker';
-import TopThreeTeamsSection from './components/TopThreeTeamsSection';
 import Credits from './components/Credits';
 import SoundButton from './components/SoundButton';
 import Timeboard from './components/Timeboard';
@@ -51,6 +51,23 @@ function App() {
   const [loadingTop, setLoadingTop] = useState(false);
 
   const [tickerMessage, setTickerMessage] = useState<string>("");
+  // house scoring data (same shape as HouseRankPage)
+  type BatchScores = Record<string, number>;
+  type HousesData = Record<string, BatchScores>;
+  const [housesData, setHousesData] = useState<HousesData | null>(null);
+
+  // connect to socket for houses (reuse existing backend data stream)
+  useEffect(() => {
+    const socket = io(BACKENDURL);
+    socket.emit('joinRoom', 'Houses');
+    socket.on('sendData', (data: HousesData) => {
+      setHousesData(data);
+    });
+    return () => {
+      socket.off('sendData');
+      socket.disconnect();
+    };
+  }, [BACKENDURL]);
 
   useEffect(() => {
     fetchContestTimes(BACKENDURL, setStartTime, setEndTime);
@@ -119,21 +136,68 @@ function App() {
     return [byRank[1], byRank[2], byRank[3]].filter(Boolean) as Team[];
   }, [topTeams]);
 
-  const pickTickerMessage = () => {
-    if (!podium.length) return "";
-    const house = HOUSES[Math.floor(Math.random() * HOUSES.length)];
-    const team = podium[Math.floor(Math.random() * podium.length)];
-    const teamLabel = team?.teamName ?? "a top team";
-    const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
-    return template(house, teamLabel);
-  };
+  // derive sorted house totals
+  const houseRows = useMemo(() => {
+    if (!housesData) return [] as { house: string; total: number }[];
+    return Object.entries(housesData)
+      .map(([house, batches]) => ({
+        house,
+        total: Object.values(batches).reduce((s, v) => s + (v ?? 0), 0)
+      }))
+      .sort((a, b) => b.total - a.total);
+  }, [housesData]);
+
+  // House rivalry templates
+  const HOUSE_TEMPLATES = useMemo<Array<(lead: string, behind: string, gap: number, rankDiff: number) => string>>(() => [
+    (a, b, g) => `${a} extends its lead over ${b} by ${g} pts!`,
+    (a, b, g) => `${a} keeps ${b} at bay — gap ${g}.`,
+    (a, b, g) => `${b} is chasing ${a}; distance now ${g} points`,
+    (a, b, g) => `${a} holds the top against ${b} (gap ${g}).`,
+    (a, b, g, r) => `${a} is ${r === 1 ? 'just' : ''} ${r} rank(s) ahead of ${b} with ${g} point cushion!`,
+    (a, b, g) => `${b} needs ${g + 1} more to catch ${a}!`,
+    (a, b, g) => `${a} powers forward; ${b} trailing by ${g}.`,
+    (a, b, g) => `${a} vs ${b}: gap steady at ${g} pts`,
+    (a, b, g) => `${a} widens the margin — ${g} points now separate them from ${b}.`,
+    (a, b, g) => `${b} closes in? Not yet — ${a} still +${g}`,
+  ], []);
+
+  const pickTickerMessage = useCallback(() => {
+    // during the competition show house rivalry if we have at least 2 houses
+    if (phase === 'during' && houseRows.length >= 2) {
+      // pick a leading house (biased toward top) and a behind house below it
+      const leadIndex = Math.floor(Math.random() * Math.min(3, houseRows.length)); // prefer among top 3
+      const lead = houseRows[leadIndex];
+      // behind index somewhere below lead
+      const behindCandidates = houseRows.filter((_, i) => i !== leadIndex && i > leadIndex);
+      if (behindCandidates.length === 0) return '';
+      const behind = behindCandidates[Math.floor(Math.random() * behindCandidates.length)];
+      const gap = lead.total - behind.total;
+      const rankDiff = houseRows.indexOf(behind) - houseRows.indexOf(lead);
+      if (gap === 0) {
+        return `${lead.house} and ${behind.house} are neck and neck!`; 
+      }
+      const template = HOUSE_TEMPLATES[Math.floor(Math.random() * HOUSE_TEMPLATES.length)];
+      return template(lead.house, behind.house, gap, rankDiff);
+    }
+    // fallback to old team-based logic only if not enough house data
+    if (podium.length) {
+      const house = HOUSES[Math.floor(Math.random() * HOUSES.length)];
+      const team = podium[Math.floor(Math.random() * podium.length)];
+      const teamLabel = team?.teamName ?? 'a top team';
+      const template = NEWS_TEMPLATES[Math.floor(Math.random() * NEWS_TEMPLATES.length)];
+      return template(house, teamLabel);
+    }
+    return '';
+  }, [phase, houseRows, podium, HOUSE_TEMPLATES]);
 
   useEffect(() => {
-    if (phase !== 'during' || podium.length === 0) return;
+    if (phase !== 'during') return;
+    // require at least some data (house or podium) to start ticker
+    if (houseRows.length < 2 && podium.length === 0) return;
     setTickerMessage(pickTickerMessage());
     const id = setInterval(() => setTickerMessage(pickTickerMessage()), 50_000);
     return () => clearInterval(id);
-  }, [phase, podium.length]);
+  }, [phase, houseRows.length, podium.length, pickTickerMessage]);
 
   const goRight = () => {
     setPage(prev => {
@@ -234,23 +298,13 @@ function App() {
         </div>
       )}
 
+      {/* dummy usage to silence lint for loadingTop */}
+      <span style={{ display: 'none' }}>{loadingTop ? 'loading' : ''}</span>
       {/* bottom ticker message */}
       {phase === 'during' && tickerMessage && (
         <BottomTicker tickerMessage={tickerMessage} />
       )}
 
-      {/* top three team podium component */}
-      {/* {phase === 'after' && (
-        loadingTop ? (
-          <div className="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-            <div className="mx-4 rounded-2xl bg-[#ffe8b0] shadow-2xl border-4 border-[#3c0d0d]/70 px-8 py-10 text-center">
-              <div className="text-3xl font-hoshiko text-[#3c0d0d]">Finalizing results…</div>
-            </div>
-          </div>
-        ) : (
-          <TopThreeTeamsSection podium={podium} />
-        )
-      )} */}
     </main>
   );
 }

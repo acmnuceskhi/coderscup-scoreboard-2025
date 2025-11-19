@@ -60,6 +60,43 @@ const HouseRankPage = ({ page }: { page: string }) => {
 
     const hasData = data && rows.length > 0;
 
+    // Subtle per-house color accents
+    const normalizeHouseKey = (h: string) =>
+        h.replace(/^house\s+/i, "")
+            .replace(/\s+/g, "")
+            .toLowerCase();
+
+    const HOUSE_ACCENTS: Record<string, { ring: string; bg: string; leftShadow: string; text: string }> = {
+        // Oogway: green
+        oogway: {
+            ring: "ring-emerald-400/25",
+            bg: "bg-green-900/50",
+            leftShadow: "shadow-[inset_4px_0_0_rgba(16,185,129,0.55)]",
+            text: "text-emerald-100 font-bold",
+        },
+        // Shen: red
+        shen: {
+            ring: "ring-rose-400/20",
+            bg: "bg-rose-900/50",
+            leftShadow: "shadow-[inset_4px_0_0_rgba(244,63,94,0.35)]",
+            text: "text-rose-100 font-bold",
+        },
+        // DragonWarrior: yellow
+        dragonwarrior: {
+            ring: "ring-amber-400/25",
+            bg: "bg-amber-900/50",
+            leftShadow: "shadow-[inset_4px_0_0_rgba(245,158,11,0.6)]",
+            text: "text-amber-100 font-bold",
+        },
+        // TaiLung: dark blue
+        tailung: {
+            ring: "ring-indigo-400/25",
+            bg: "bg-indigo-900/50",
+            leftShadow: "shadow-[inset_4px_0_0_rgba(79,70,229,0.55)]",
+            text: "text-indigo-100 font-bold",
+        },
+    };
+
     return (
         <div className="flex flex-col items-center">
             <img
@@ -80,7 +117,7 @@ const HouseRankPage = ({ page }: { page: string }) => {
                 )}
 
                 {hasData && (
-                    <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/95 to-[#050101]/95 shadow-[0_35px_55px_rgba(0,0,0,0.6)]">
+                    <div className="w-full overflow-hidden border-2 border-[#7f1d1d] bg-linear-to-b from-[#150404]/40 to-[#050101]/40 shadow-[0_35px_55px_rgba(0,0,0,0.4)]">
                         <div className="max-h-[43vh] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overflow-x-auto max-w-[90vw]">
                             <table className="min-w-max mx-auto max-w-[90vw] overflow-x-auto">
                                 <thead className="sticky top-0 z-30">
@@ -106,47 +143,53 @@ const HouseRankPage = ({ page }: { page: string }) => {
 
                                 <tbody aria-live="polite">
                                     <AnimatePresence initial={false}>
-                                        {rows.map((row) => (
-                                            <motion.tr
-                                                key={row.house}
-                                                layout
-                                                initial={{ opacity: 0.5, y: 16 }}
-                                                animate={{
-                                                    opacity: 1,
-                                                    y: 0,
-                                                    transition: { duration: 1, ease: "easeOut" },
-                                                }}
-                                                exit={{
-                                                    opacity: 0,
-                                                    y: -16,
-                                                    transition: { duration: 1, ease: "easeIn" },
-                                                }}
-                                                transition={{
-                                                    type: "spring",
-                                                    stiffness: 1500,
-                                                    damping: 40,
-                                                    mass: 1.4,
-                                                }}
-                                                className="group overflow-hidden transition-all duration-300 backdrop-blur-sm bg-linear-to-r from-[#1f2937]/60 via-[#0f172a]/70 to-[#020617]/80 ring-2 ring-[#f59e0b]/15"
-                                            >
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-2 text-amber-50 italic text-center text-lg sm:text-xl">
-                                                    {row.house}
-                                                </td>
+                                        {rows.map((row) => {
+                                            const key = normalizeHouseKey(row.house);
+                                            const accent = HOUSE_ACCENTS[key];
+                                            const rowClass = `group overflow-hidden transition-all duration-300 backdrop-blur-sm ring-2 ${accent ? accent.ring : 'ring-[#f59e0b]/15'} ${accent ? accent.bg : ''} ${accent ? accent.leftShadow : ''}`;
+                                            const houseTextClass = `whitespace-nowrap px-6 sm:px-10 py-3 italic text-center text-lg sm:text-xl ${accent ? accent.text : 'text-amber-50'}`;
+                                            return (
+                                                <motion.tr
+                                                    key={row.house}
+                                                    layout
+                                                    initial={{ opacity: 0.5, y: 16 }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        y: 0,
+                                                        transition: { duration: 1, ease: "easeOut" },
+                                                    }}
+                                                    exit={{
+                                                        opacity: 0,
+                                                        y: -16,
+                                                        transition: { duration: 1, ease: "easeIn" },
+                                                    }}
+                                                    transition={{
+                                                        type: "spring",
+                                                        stiffness: 1500,
+                                                        damping: 40,
+                                                        mass: 1.4,
+                                                    }}
+                                                    className={rowClass}
+                                                >
+                                                    <td className={houseTextClass}>
+                                                        {row.house}
+                                                    </td>
 
                                                 {batchKeys.map((batch) => (
                                                     <td
                                                         key={batch}
-                                                        className="whitespace-nowrap px-2.5 sm:px-3.5 py-2 text-amber-50 text-center font-semibold italic text-base sm:text-lg"
+                                                        className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-base sm:text-lg"
                                                     >
                                                         {row.batches[batch] ?? 0}
                                                     </td>
                                                 ))}
 
-                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-2 text-amber-50 text-center font-semibold italic text-lg sm:text-xl">
+                                                <td className="whitespace-nowrap px-2.5 sm:px-3.5 py-3 text-amber-50 text-center font-semibold italic text-lg sm:text-xl">
                                                     {row.totalScore}
                                                 </td>
-                                            </motion.tr>
-                                        ))}
+                                                </motion.tr>
+                                            );
+                                        })}
                                     </AnimatePresence>
                                 </tbody>
                             </table>
