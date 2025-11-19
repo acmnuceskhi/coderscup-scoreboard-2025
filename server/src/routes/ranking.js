@@ -100,6 +100,13 @@ export default function rankingRoutes(io) {
         return res.status(404).json({ error: "No buffer data found" });
     });
 
+    router.get('/getHouseRanking', (req, res) => {
+        if (buffer['Houses']) {
+            return res.status(200).json(buffer['Houses']);
+        }
+        return res.status(404).json({ error: "No house ranking data found" });
+    });
+
     router.post('/postContestTime', Authenticate, (req, res) => {
         const { startTime, endTime } = req.body;
         contestTimes.startTime = startTime;
