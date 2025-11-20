@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import TableSpinner from "./TableSpinner";
 import { motion, AnimatePresence } from "framer-motion";
+import { BACKENDURL } from "../../constants"
 
 type Row = {
     teamId: string;
@@ -116,9 +117,8 @@ const ScoreBoard = ({ room, onDataUpdate, isSoundOpen, page }: ScoreboardProps) 
     }, [isSoundOpen]);
 
     useEffect(() => {
-        // const backendUrl = "https://coderscup-scoreboard-backend.onrender.com";
-        const backendUrl = "http://localhost:4000";
-        const socket = io(backendUrl);
+
+        const socket = io(BACKENDURL);
         socket.emit("joinRoom", room);
         const onUpdate = (payload: Payload) => {
             // console.log("Received payload:", payload);

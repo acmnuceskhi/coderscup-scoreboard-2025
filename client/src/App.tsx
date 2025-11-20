@@ -10,6 +10,7 @@ import { formatHMS, fetchContestTimes, fetchTopTeams } from './utils/Functions';
 import ScoreboardPage from './pages/ScoreboardPage';
 import HouseStatsPage from './pages/HouseStatsPage';
 import HouseRankPage from './pages/HouseRankPage';
+import { BACKENDURL } from '../constants'
 
 type Phase = 'idle' | 'before' | 'during' | 'after';
 type Page = 'scoreboard' | 'house' | 'houserank';
@@ -34,8 +35,6 @@ const getPageTransform = (current: Page, target: Page) => {
 };
 
 function App() {
-  const BACKENDURL = "http://localhost:4000";
-  // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
   const [page, setPage] = useState<Page>('house');
 

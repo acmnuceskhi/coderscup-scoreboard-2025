@@ -2,13 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { io } from "socket.io-client";
 import TableSpinner from "../components/TableSpinner";
 import { AnimatePresence, motion } from "framer-motion";
+import { BACKENDURL } from "../../constants"
 
 type BatchScores = Record<string, number>;
 type HousesData = Record<string, BatchScores>;
 
 const HouseRankPage = ({ page }: { page: string }) => {
-    const BACKENDURL = "http://localhost:4000";
-    // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
     const [data, setData] = useState<HousesData | null>(null);
 

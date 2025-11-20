@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { io } from "socket.io-client";
+import { BACKENDURL } from '../../constants';
 
 const houses: { name: string, img: string }[] = [
     { name: "DragonWarrior", img: "/dragonwarrior-bg.png" },
@@ -12,9 +13,6 @@ const batches: string[] = ["22k", "23k", "24k", "25k"];
 type HousesData = Record<string, Record<string, number | undefined>>;
 
 const HouseStatsPage = ({ page }: { page: string }) => {
-
-    const BACKENDURL = "http://localhost:4000/";
-    // const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 
     const [data, setData] = useState<HousesData>({});
 
