@@ -9,17 +9,17 @@ const KEY = process.env.KEY;
 
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 const leaderBoardURLs = [
-    { batch: "22k", url: "https://vjudge.net/contest/768216#rank" },
-    { batch: "23k", url: "https://vjudge.net/contest/768221#rank" },
-    { batch: "24k", url: "https://vjudge.net/contest/768220#rank" },
-    { batch: "25k", url: "https://vjudge.net/contest/768218#rank" }
+    { batch: "22k", url: "https://vjudge.net/contest/767305#rank" },
+    { batch: "23k", url: "https://vjudge.net/contest/767191#rank" },
+    { batch: "24k", url: "https://vjudge.net/contest/767269#rank" },
+    { batch: "25k", url: "https://vjudge.net/contest/767190#rank" }
 ];
 
 const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 // const BACKENDURL = "http://localhost:4000";
 
-const CONTEST_START = "2025-11-19T21:10:00+05:00";
-const CONTEST_END = "2025-11-21T23:56:00+05:00";
+const CONTEST_START = "2025-11-20T10:00:00+05:00";
+const CONTEST_END = "2025-11-20T12:00:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
@@ -157,22 +157,30 @@ export const postData = async (data, batch) => {
 
 export const scrapeAndSendData = async (batch, leaderboardURL) => {
     console.log(`Data being scraped for ${batch}...`);
+
     const data = await getData(leaderboardURL);
-    if (!data) return;
-    // console.log(data);
-    const updatedData = data.filter(item => item.rank !== "--");
-    // console.log(updatedData[0]);
-    if (data && Array.isArray(data)) {
-        console.log("posting data to backend...");
-        await postData(
-            {
-                rows: updatedData
-            },
-            batch
-        );
-    } else {
-        console.error("No data scraped or data is empty");
+
+    // If scraping failed or returned error object
+    if (!Array.isArray(data)) {
+        console.error("No valid array data scraped:", data, "of batch", batch);
+        return;
     }
+
+    // Now it's safe to use .filter
+    const updatedData = data.filter(item => item.rank !== "--");
+
+    if (updatedData.length === 0) {
+        console.warn(`No valid rows after filtering for batch ${batch}`);
+        return;
+    }
+
+    console.log("posting data to backend...");
+    await postData(
+        {
+            rows: updatedData,
+        },
+        batch
+    );
 };
 
 export const postTime = async (startTime, endTime) => {

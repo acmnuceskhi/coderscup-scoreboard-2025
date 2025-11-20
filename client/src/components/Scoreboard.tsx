@@ -66,10 +66,6 @@ const getRankAura = (rank: number) => {
     };
 };
 
-// House accent helpers for left color bar
-const normalizeHouseKey = (name: string) =>
-    name.replace(/^house\s+/i, "").replace(/\s+/g, "").toLowerCase();
-
 const HOUSE_ACCENTS: Record<string, { leftShadow: string }> = {
     oogway: { leftShadow: "shadow-[inset_4px_0_0_rgba(16,185,129,0.45)]" }, // green
     shen: { leftShadow: "shadow-[inset_4px_0_0_rgba(244,63,94,0.45)]" },    // red
