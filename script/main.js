@@ -18,8 +18,8 @@ const leaderBoardURLs = [
 const BACKENDURL = "https://coderscup-scoreboard-backend.onrender.com";
 // const BACKENDURL = "http://localhost:4000";
 
-const CONTEST_START = "2025-11-20T10:00:00+05:00";
-const CONTEST_END = "2025-11-20T12:00:00+05:00";
+const CONTEST_START = "2025-11-20T10:30:00+05:00";
+const CONTEST_END = "2025-11-20T12:30:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
