@@ -90,6 +90,9 @@ export default function rankingRoutes(io) {
 
         io.to(batch).emit("sendData", payload);
 
+        if (buffer['Houses'])
+            io.to('Houses').emit("sendData", buffer['Houses']);
+
         return res.status(200).json({ message: "Buffer updated" });
     });
 

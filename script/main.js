@@ -19,7 +19,7 @@ const leaderBoardURLs = [
 const BACKENDURL = "http://localhost:4000";
 
 const CONTEST_START = "2025-11-19T21:10:00+05:00";
-const CONTEST_END = "2025-11-20T23:56:00+05:00";
+const CONTEST_END = "2025-11-21T23:56:00+05:00";
 // ------------------------------------ SUBJECTIVE DATA ------------------------------------
 
 const __filename = fileURLToPath(import.meta.url);
